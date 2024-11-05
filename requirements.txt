@@ -2,5 +2,4 @@ streamlit
 matplotlib
 sympy
 pandas
-numpy
-scipy
+requests
