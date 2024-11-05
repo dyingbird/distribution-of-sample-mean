@@ -6,17 +6,25 @@ from sympy import Rational, sqrt, simplify, latex
 import pandas as pd
 import os
 import platform
+import requests  # 추가
+from io import BytesIO  # 추가
 
 st.title("확률분포 계산기")
 
 # 한글 폰트 설정 시작
-if platform.system() == 'Windows':
-    font_name = font_manager.FontProperties(fname='c:/Windows/Fonts/malgun.ttf').get_name()
-    rc('font', family=font_name)
-elif platform.system() == 'Darwin':  # macOS
-    rc('font', family='AppleGothic')
-else:  # Linux 등
-    rc('font', family='NanumGothic')
+
+# 폰트 파일 다운로드 및 설정
+@st.cache_data  # Streamlit 캐싱 데코레이터
+def get_font():
+    url = 'https://github.com/team-monolith-product/korean-font-collection/raw/master/NanumGothic.ttf'
+    response = requests.get(url)
+    font_bytes = BytesIO(response.content)
+    font_name = font_manager.FontProperties(fname=font_bytes).get_name()
+    font_manager.fontManager.addfont(font_bytes)
+    return font_name
+
+font_name = get_font()
+plt.rcParams['font.family'] = font_name
 
 # 마이너스 폰트 설정
 plt.rcParams['axes.unicode_minus'] = False
