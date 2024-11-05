@@ -108,9 +108,9 @@ if st.button("계산하기"):
         ax.set_xticks(sample_means_float)
         ax.set_xticklabels(sample_means_latex_labels, rotation=45, ha='right', fontsize=10)
 
-        ax.set_xlabel("표본평균")
-        ax.set_ylabel("확률")
-        ax.set_title("표본평균의 분포")
+        ax.set_xlabel("sample mean")
+        ax.set_ylabel("probability")
+        ax.set_title("distribution of sample mean")
         st.pyplot(fig)
 
         # 표본평균의 확률분포표 생성 및 출력
