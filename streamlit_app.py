@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import platform
 import requests  # 추가
-from io import BytesIO  # 추가
+import tempfile  # 추가
 
 st.title("확률분포 계산기")
 
@@ -18,9 +18,13 @@ st.title("확률분포 계산기")
 def get_font():
     url = 'https://github.com/team-monolith-product/korean-font-collection/raw/master/NanumGothic.ttf'
     response = requests.get(url)
-    font_bytes = BytesIO(response.content)
-    font_name = font_manager.FontProperties(fname=font_bytes).get_name()
-    font_manager.fontManager.addfont(font_bytes)
+    # 임시 파일에 저장
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.ttf') as f:
+        f.write(response.content)
+        font_path = f.name
+    # 폰트 매니저에 폰트 추가
+    font_manager.fontManager.addfont(font_path)
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
     return font_name
 
 font_name = get_font()
