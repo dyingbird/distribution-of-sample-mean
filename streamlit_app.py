@@ -16,19 +16,46 @@ st.title("확률분포 계산기")
 # 폰트 파일 다운로드 및 설정
 @st.cache_data  # Streamlit 캐싱 데코레이터
 def get_font():
+    # 나눔고딕 폰트의 공식 다운로드 URL 사용
     url = 'https://github.com/team-monolith-product/korean-font-collection/raw/master/NanumGothic.ttf'
     response = requests.get(url)
+
+    # 응답 상태 코드 확인
+    if response.status_code != 200:
+        st.error(f"폰트 파일을 다운로드하는 데 실패했습니다. 상태 코드: {response.status_code}")
+        return None
+
+    # 콘텐츠 유형 확인 (선택 사항)
+    if 'application/octet-stream' not in response.headers.get('Content-Type', ''):
+        st.error("다운로드된 파일이 폰트 파일이 아닙니다.")
+        return None
+
+    # 파일 크기 확인
+    if len(response.content) < 1000:
+        st.error("다운로드된 폰트 파일의 크기가 너무 작습니다. 올바른 파일이 아닐 수 있습니다.")
+        return None
+
     # 임시 파일에 저장
     with tempfile.NamedTemporaryFile(delete=False, suffix='.ttf') as f:
         f.write(response.content)
         font_path = f.name
+
     # 폰트 매니저에 폰트 추가
-    font_manager.fontManager.addfont(font_path)
-    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    try:
+        font_manager.fontManager.addfont(font_path)
+        font_name = font_manager.FontProperties(fname=font_path).get_name()
+    except Exception as e:
+        st.error(f"폰트 파일을 로드하는 중 오류가 발생했습니다: {e}")
+        return None
+
     return font_name
 
 font_name = get_font()
-plt.rcParams['font.family'] = font_name
+
+if font_name:
+    plt.rcParams['font.family'] = font_name
+else:
+    st.warning("한글 폰트를 로드하지 못하여 기본 폰트를 사용합니다.")
 
 # 마이너스 폰트 설정
 plt.rcParams['axes.unicode_minus'] = False
